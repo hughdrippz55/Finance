@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+
+{% block main %}
+    <div class="row justify-content-center">
+        <form method="POST" action="" id="login">
+            {{ form.hidden_tag() }}
+            <fieldset class="form mb-4">
+                <legend class="border-bottom pb-4">Buy a Stock</legend>
+                <div class="form-group mb-4">
+                    <div class="leftTab">
+                    {{ form.buy_symbol.label(class="form-control-label") }}
+                    </div>
+                    <div class="rightTab">
+                    {% if form.buy_symbol.errors %}
+                        {{ form.buy_symbol(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.stock_symbol.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.buy_symbol(class="form-control form-control-lg", id="buy_symbol", onkeyup="sumFields()") }}
+                    {% endif %}
+                </div>
+            </div>
+                <div class="form-group mb-4">
+                    <div class="leftTab">
+                    {{ form.shares.label(class="form-control-label") }}
+                    </div>
+                    <div class="rightTab">
+                    {% if form.shares.errors %}
+                        {{ form.shares(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.shares.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.shares(class="form-control form-control-lg", id="shares", onkeyup="sumFields()") }}
+                    {% endif %}
+                </div>
+            </div>
+            </fieldset>
+
+        </form>
+    </div>
+ <div class="row justify-content-center mb-3" id="total"></div>
+<small class="text-muted">
+    <a target="_blank" href="https://swingtradebot.com/equities">List of Stocks</a>
+</small>
+    <div class="form-group mt-3">
+        {{ form.submit(class="btn btn-outline-info") }}
+    </div>
+
+
+
+
+{% endblock %}

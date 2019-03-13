@@ -1,0 +1,32 @@
+{% extends 'layout.html' %}
+
+{% block main %}
+ <div class="row justify-content-center">
+        <form method="POST" action="/quote">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Enter stock symbol to display current price</legend>
+                <div class="form-group">
+                    <div id="symbolLabel">
+                    {{ form.quote_symbol.label(class="form-control-label") }}
+                    </div>
+                    <div class="rightTab">
+                    {% if form.quote_symbol.errors %}
+                        {{ form.quote_symbol(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.quote_symbol.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.quote_symbol(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </div>
+        </fieldset>
+         <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+         </div>
+
+
+{% endblock %}
