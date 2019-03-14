@@ -1,6 +1,7 @@
 import os
+import datetime
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, flash, get_flashed_messages, jsonify, redirect, render_template, request, session, url_for
+from flask import Flask, flash, get_flashed_messages, jsonify, redirect, render_template, session, request, url_for
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required
 from flask_session import Session
 from flask_bcrypt import Bcrypt
@@ -8,7 +9,7 @@ from tempfile import mkdtemp
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from helpers import apology, lookup, usd
+from helpers import apology, lookup, usd, findKey
 
 
 
@@ -27,8 +28,9 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
 db = SQLAlchemy(app)
+now = datetime.datetime.now()
 
-from models import User, load_user
+from models import User, load_user, userCurrent, userHistory
 from forms import RegistrationForm, LoginForm, QuoteForm, BuyForm
 
 db.create_all()
@@ -68,15 +70,46 @@ def buy():
     """Buy shares of stock"""
     form = BuyForm()
     if form.validate_on_submit():
-        buy_symbol = lookup(request.form.get("buy_symbol"))
-        shares = request.form.get("shares")
-        total = int(buy_symbol["latestPrice"]) * int(shares)
-        if not buy_symbol:
-            flash('Invalid Symbol', 'danger')
-            return redirect("/buy")
-        elif total > user.cash:
-            flash('Not enough cash to complete transaction')
-            return redirect("/buy")
+        buy_symbol = lookup(str(request.form.get("buy_symbol")))
+        if buy_symbol:
+            symbol_name = buy_symbol["symbol"]
+            symbol_price = float(buy_symbol["price"])
+            shares = int(form.shares.data)
+            total = float(symbol_price * shares)
+            user = User.query.filter_by(id = current_user.id).first()
+            symbol_check = userCurrent.query.filter_by(user_id = current_user.id, symbol = symbol_name).first()
+            if user.cash < total:
+                flash("Not enough cash in account to complete transaction")
+                return redirect("/buy")
+            elif symbol_check:
+                user.cash -= total
+                symbol_check.noShares += shares
+                user_history = userHistory(historySymbol = symbol_name, noSharesHistory = shares, historyppStock = symbol_price, transType = "Buy", transAmount = total, user_id = current_user.id)
+                db.session.add(user_history)
+                db.session.commit()
+                # user_current = userCurrent.query.filter_by(id = rowKey).first()
+                # user_current.noShares += shares
+                flash(f"You have successfully purchased {shares} shares of {symbol_name}", "success")
+                return redirect("/buy")
+            else:
+                user.cash -= total
+                user_current = userCurrent(symbol = symbol_name, ppStock = symbol_price, noShares = shares, user_id = current_user.id)
+                user_history = userHistory(historySymbol = symbol_name, noSharesHistory = shares, historyppStock = symbol_price, transType = "Buy", transAmount = total, user_id = current_user.id)
+                db.session.add(user_current)
+                db.session.add(user_history)
+                db.session.commit()
+                flash(f"You have successfully purchased {shares} shares of {symbol_name}", "success")
+                return redirect("/buy")
+        else:
+            flash("Invalid Symbol", "danger")
+    return render_template("buy.html", form=form)
+        # if not buy_symbol:
+        #     flash('Invalid Symbol', 'danger')
+        #     return redirect("/buy")
+        # elif total > user.cash:
+        #     flash('Not enough cash to complete transaction')
+        #     return redirect("/buy")
+
 
     return render_template("buy.html", form=form)
 

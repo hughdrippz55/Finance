@@ -38,5 +38,5 @@ class QuoteForm(FlaskForm):
 class BuyForm(FlaskForm):
 
     buy_symbol = StringField("Stock Symbol", validators=[DataRequired()])
-    shares = IntegerField("Amount of Shares", validators=[DataRequired(), Length(min=3)])
+    shares = IntegerField("Amount of Shares", validators=[DataRequired()])
     submit = SubmitField('Buy Stock')
