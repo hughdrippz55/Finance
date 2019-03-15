@@ -46,10 +46,3 @@ def usd(value):
     """Format value as USD."""
     return f"${value:,.2f}"
 
-def findKey(rowColumn, string):
-    counter = 1
-    for item in rowColumn:
-        counter += 1
-        if item == string:
-            break
-            return counter

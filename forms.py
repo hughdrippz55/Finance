@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, Regexp
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, SelectField
+from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, Regexp, AnyOf
 from models import User
 
 
@@ -38,5 +38,11 @@ class QuoteForm(FlaskForm):
 class BuyForm(FlaskForm):
 
     buy_symbol = StringField("Stock Symbol", validators=[DataRequired()])
-    shares = IntegerField("Amount of Shares", validators=[DataRequired()])
+    shares = IntegerField("Amount of Shares", validators=[DataRequired(message='Invalid input. Enter a number above zero only')])
     submit = SubmitField('Buy Stock')
+
+
+class SellForm(FlaskForm):
+    stocks = SelectField('Select stock to sell', validators=[DataRequired()])
+    amountToSell = IntegerField('Amount of Shares', validators=[DataRequired()])
+    sell = SubmitField('Sell Stock')

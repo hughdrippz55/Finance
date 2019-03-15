@@ -76,6 +76,9 @@ main img
     color: #ffffff;
     font-size: 12px;
 }
+.centerTab {
+    text-align: center;
+}
 
 #symbolLabel {
 

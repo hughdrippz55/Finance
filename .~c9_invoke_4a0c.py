@@ -111,6 +111,16 @@ def buy():
         else:
             flash("Invalid Symbol", "danger")
     return render_template("buy.html", form=form)
+        # if not buy_symbol:
+        #     flash('Invalid Symbol', 'danger')
+        #     return redirect("/buy")
+        # elif total > user.cash:
+        #     flash('Not enough cash to complete transaction')
+        #     return redirect("/buy")
+
+
+    return render_template("buy.html", form=form)
+
 
 @app.route("/check", methods=["GET"])
 def check():
@@ -165,7 +175,7 @@ def quotes():
     if form.validate_on_submit() and request.method =="POST":
         quote_symbol = lookup(request.form.get("quote_symbol"))
         if not quote_symbol:
-            flash('Invalid Symbol', 'danger')
+            flash('Invalid Symbol' + str(current_user.id), 'danger')
             return redirect("/quote")
         return render_template("quoted.html", stock=quote_symbol)
     else:
@@ -193,44 +203,11 @@ def register():
 @app.route("/sell", methods=["GET", "POST"])
 @login_required
 def sell():
-    """Sell shares of stock"""
+    u = dbtodict
     options = userCurrent.query.filter_by(user_id = current_user.id).order_by(userCurrent.symbolName).all()
     stockOpt = [row.serialize for row in options]
-    form = SellForm(request.form,obj=options)
+    form = SellForm(stocks='Select a Stock')
     form.stocks.choices = stockOpt
-    if form.validate_on_submit():
-        shares = form.amountToSell.data
-        sellInfo = form.stocks.data.split(", ")
-        symbolSell = lookup(sellInfo[0])
-        symbol_name = sellInfo[0]
-        company_name = symbolSell['name']
-        noStocksNAcc = int(sellInfo[1])
-        ppStockSell = float(symbolSell['price'])
-        total = noStocksNAcc * ppStockSell
-        user = User.query.filter_by(id = current_user.id).first()
-        user_current = userCurrent.query.filter_by(symbol = sellInfo[0], user_id = current_user.id).first()
-        user_current.noShares -= shares
-        user.cash += total
-        if noStocksNAcc < shares:
-            flash("You don't have that many shares to sell", "danger")
-            return redirect("/sell")
-        elif shares == 0 or shares < 0:
-            flash(f"Must enter number above zero", "danger")
-            return redirect("/sell")
-        else:
-            if shares == 1:
-                flash(f"You have sold {shares} share of {company_name}", "success")
-            else:
-                flash(f"You have sold {shares} shares of {company_name}", "success")
-            if user_current.noShares == 0:
-                db.session.delete(user_current)
-                user_history = userHistory(historySymbol = symbol_name, historySymbolName = company_name, noSharesHistory = shares, historyppStock = ppStockSell, transType = "Sell", transAmount = total, user_id = current_user.id)
-                db.session.add(user_history)
-                db.session.commit()
-            user_history = userHistory(historySymbol = symbol_name, historySymbolName = company_name, noSharesHistory = shares, historyppStock = ppStockSell, transType = "Sell", transAmount = total, user_id = current_user.id)
-            db.session.add(user_history)
-            db.session.commit()
-            return redirect('/sell')
     return render_template("sell.html", form=form)
 
 

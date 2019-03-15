@@ -19,28 +19,35 @@ class User(db.Model, UserMixin):
 class userCurrent(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     symbol = db.Column(db.String(10), unique=False, nullable=False)
+    symbolName = db.Column(db.String(300), unique=False, nullable=False)
     ppStock = db.Column(db.Integer, unique=False, nullable=False)
     netWorth = db.Column(db.Integer, unique=False, nullable=True)
     noShares = db.Column(db.Integer, unique=False, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     userH = db.relationship(User)
 
+    @property
+    def serialize(self):
+        if self.noShares == 1:
+            selectOption = f'{self.symbolName} - ({self.noShares} share) - ${self.ppStock}/share'
+        else:
+            selectOption = f'{self.symbolName} - ({self.noShares} shares) - ${self.ppStock}/share'
+        return f"{self.symbol}, {self.noShares}", selectOption
+
     def __repr__(self):
-        return f"userCurrent('{self.symbol}', '{self.ppStock}', '{self.netWorth}', '{self.noShares}')"
+        return f"{self.symbol}, {self.noShares}"
 
 class userHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-
     historySymbol = db.Column(db.String(10), unique=False, nullable=False)
+    historySymbolName = db.Column(db.String(300), unique=False, nullable=False)
     noSharesHistory = db.Column(db.Integer, unique=False, nullable=False)
     historyppStock = db.Column(db.Integer, unique=False, nullable=False)
     transType = db.Column(db.String(6), unique=False, nullable=False)
     transAmount = db.Column(db.Integer, unique=False, nullable=False)
     date = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    userC = db.relationship(User)
-
-
+    userC = db.relationship
 
 
 @login_manager.user_loader

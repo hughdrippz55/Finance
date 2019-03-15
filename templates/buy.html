@@ -14,7 +14,7 @@
                     {% if form.buy_symbol.errors %}
                         {{ form.buy_symbol(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
-                            {% for error in form.stock_symbol.errors %}
+                            {% for error in form.buy_symbol.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>

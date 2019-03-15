@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+    {% block main %}
+    <div class="row justify-content-center">
+        <form method="POST" action="/sell">
+            {{ form.hidden_tag() }}
+            <fieldset class="form mb-4">
+                <legend class="border-bottom pb-4">Sell a Stock</legend>
+                <div class="form-group mb-4">
+                    <div class="centerTab">
+                        {{ form.stocks.label(class='form-control-label form-control-lg') }}
+                    </div>
+                        {{ form.stocks(class="form-control-lg", id="stocks", onchange="sumFieldsSell()") }}
+                </div>
+                <div class="form-group mb-4">
+                    <div class="centerTab">
+                        {{ form.amountToSell.label(class='form-control-label form-control-lg') }}
+                    </div>
+                        {{ form.amountToSell(class='form-control-lg', style='text-align:center;', id='sharesSell', onkeyup="sumFieldsSell()") }}
+                </div>
+            </fieldset>
+    </div>
+    <div class="row justify-content-center mb-3" id="total"></div>
+            <div class="form-group mt-3">
+                {{ form.sell(class="btn btn-outline-info") }}
+            </div>
+        </form>
+
+    {% endblock %}
