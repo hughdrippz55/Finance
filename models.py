@@ -33,9 +33,12 @@ class userCurrent(db.Model):
         else:
             selectOption = f'{self.symbolName} - ({self.noShares} shares) - ${self.ppStock}/share'
         return f"{self.symbol}, {self.noShares}", selectOption
+    @db.reconstructor
+    def __repr__(self):
+        return f"{self.symbol} {self.noShares} {self.symbolName} {self.ppStock}"
 
     def __repr__(self):
-        return f"{self.symbol}, {self.noShares}"
+        return f"{self.symbol}"
 
 class userHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True)

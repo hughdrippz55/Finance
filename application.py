@@ -62,7 +62,29 @@ app.config["SESSION_TYPE"] = "filesystem"
 @login_required
 def index():
     """Show portfolio of stocks"""
-    return apology("TODO")
+    user = User.query.filter_by(id = current_user.id).first()
+    user_current = userCurrent.query.filter_by(user_id = current_user.id).order_by(userCurrent.symbolName).all()
+    user_current_noShares = userCurrent.query.filter_by(user_id = current_user.id).order_by(userCurrent.symbolName).with_entities(userCurrent.noShares).all()
+    bad_chars = '(),'
+    rgx = re.compile('[%s]' % bad_chars)
+    noSharesList = [rgx.sub('', str(user_current_noShares[i])) for i in range(0, len(user_current_noShares))]
+    quotes = {}
+    i = 0
+    allTotal = 0
+    cash = user.cash
+    for symbol in user_current:
+        quotes[symbol] = lookup(str(symbol))
+        quotes[symbol]['noStocks'] = noSharesList[i]
+        quotes[symbol]['total'] = float(quotes[symbol]['price']) * int(noSharesList[i])
+        allTotal +=  float(quotes[symbol]['total'])
+        quotes[symbol]['total'] = usd(quotes[symbol]['total'])
+        i += 1
+    net_worth = allTotal + cash
+
+    net_worth = usd(net_worth)
+    allTotal = usd(allTotal)
+    cash = usd(cash)
+    return render_template("index.html", user_current=user_current, quotes=quotes, net_worth=net_worth, cash=cash, allTotal=allTotal)
 
 
 @app.route("/buy", methods=["GET", "POST"])

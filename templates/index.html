@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+    {% block main %}
+
+<div class="row justify-content-center">
+   <table class="table table-striped" style="width: 100%;">
+      <tr>
+         <th>Stock Symbol</th>
+         <th>Stock Price</th>
+         <th>Company Name</th>
+         <th>No. of Stocks</th>
+         <th>Total</th>
+      </tr>
+      {% for item in user_current %}
+      <tr>
+         <td>{{ quotes[item]['symbol'] }}</td>
+         <td>{{ quotes[item]['price'] }}</td>
+         <td>{{ quotes[item]['name'] }}</td>
+         <td>{{ quotes[item]['noStocks'] }}</td>
+         <td>{{ quotes[item]['total'] }}</td>
+      </tr>
+      {% endfor %}
+   </table>
+</div>
+   <div class='row justify-content-end'>
+      <div class='col-lg-4 text-align-right'>
+         <strong>Total in Stocks: </strong> {{ allTotal }}
+      </div>
+  </div>
+  <div class='row justify-content-end'>
+      <div class='col-lg-4 text-align-right'>
+         <strong>Cash:</strong> {{ cash }}
+      </div>
+   </div>
+   <div class='row justify-content-end'>
+      <div class='col-lg-4 text-align-right'>
+         <strong>Net Worth:</strong> {{ net_worth }}
+      </div>
+   </div>
+
+
+
+
+
+    {% endblock %}

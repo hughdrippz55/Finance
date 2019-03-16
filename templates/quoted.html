@@ -9,6 +9,7 @@
          <th>Stock Price</th>
          <th>Stock Symbol</th>
       </tr>
+      [% for row in user_current.symbol %]
       <tr>
          <td>{{ stock['name'] }}</td>
          <td>{{ stock['price'] }}</td>
