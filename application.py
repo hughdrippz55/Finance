@@ -9,10 +9,7 @@ from flask_bcrypt import Bcrypt
 from tempfile import mkdtemp
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
-
 from helpers import apology, lookup, usd
-
-
 
 # Configure application
 app = Flask(__name__)
@@ -22,7 +19,6 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config['SECRET_KEY'] = "fbae185025fe828575acb367e5687f46"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///finance.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
 
 bcrypt= Bcrypt(app)
 login_manager = LoginManager(app)
@@ -35,7 +31,6 @@ from models import User, load_user, userCurrent, userHistory
 from forms import RegistrationForm, LoginForm, QuoteForm, BuyForm, SellForm
 
 db.create_all()
-
 
 # Ensure responses aren't cached
 @app.after_request
@@ -55,8 +50,6 @@ app.config["SESSION_TYPE"] = "filesystem"
 
 
 # Configure CS50 Library to use SQLite database
-
-
 @app.route("/")
 @app.route("/home")
 @login_required
@@ -110,7 +103,8 @@ def buy():
                 elif symbol_check:
                     user.cash -= total
                     symbol_check.noShares += shares
-                    user_history = userHistory(historySymbol = symbol_name, historySymbolName = company_name, noSharesHistory = shares, historyppStock = symbol_price, transType = "Buy", transAmount = total, user_id = current_user.id)
+                    user_history = userHistory(historySymbol = symbol_name, historySymbolName = company_name, noSharesHistory = shares, historyppStock = symbol_price,
+                                   transType = "Buy", transAmount = total, user_id = current_user.id)
                     db.session.add(user_history)
                     db.session.commit()
                     if shares == 1:
@@ -123,7 +117,8 @@ def buy():
                 else:
                     user.cash -= total
                     user_current = userCurrent(symbol = symbol_name, symbolName = company_name, ppStock = symbol_price, noShares = shares, user_id = current_user.id)
-                    user_history = userHistory(historySymbol = symbol_name, historySymbolName = company_name, noSharesHistory = shares, historyppStock = symbol_price, transType = "Buy", transAmount = total, user_id = current_user.id)
+                    user_history = userHistory(historySymbol = symbol_name, historySymbolName = company_name, noSharesHistory = shares, historyppStock = symbol_price,
+                                   transType = "Buy", transAmount = total, user_id = current_user.id)
                     db.session.add(user_current)
                     db.session.add(user_history)
                     db.session.commit()
@@ -193,9 +188,6 @@ def history():
                                            user_history_noShares_list, user_history_symbolName_list=user_history_symbolName_list,
                                            user_history_symbol_list=user_history_symbol_list)
 
-
-
-
 @app.route("/login", methods=["GET", "POST"])
 def login():
     """Log user in"""
@@ -213,9 +205,6 @@ def login():
         else:
             flash('Login Unsuccessful. Please check email and password', 'danger')
     return render_template('login.html', title='Login', form=form)
-
-
-
 
 @app.route("/logout")
 def logout():
@@ -241,11 +230,6 @@ def quotes():
         return render_template("quoted.html", stock=quote_symbol)
     else:
         return render_template("quote.html", form=form)
-
-
-
-
-
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -295,10 +279,12 @@ def sell():
                 flash(f"You have sold {shares} shares of {company_name}", "success")
             if user_current.noShares == 0:
                 db.session.delete(user_current)
-                user_history = userHistory(historySymbol = symbol_name, historySymbolName = company_name, noSharesHistory = shares, historyppStock = ppStockSell, transType = "Sell", transAmount = total, user_id = current_user.id)
+                user_history = userHistory(historySymbol = symbol_name, historySymbolName = company_name, noSharesHistory = shares, historyppStock = ppStockSell,
+                               transType = "Sell", transAmount = total, user_id = current_user.id)
                 db.session.add(user_history)
                 db.session.commit()
-            user_history = userHistory(historySymbol = symbol_name, historySymbolName = company_name, noSharesHistory = shares, historyppStock = ppStockSell, transType = "Sell", transAmount = total, user_id = current_user.id)
+            user_history = userHistory(historySymbol = symbol_name, historySymbolName = company_name, noSharesHistory = shares, historyppStock = ppStockSell,
+                           transType = "Sell", transAmount = total, user_id = current_user.id)
             db.session.add(user_history)
             db.session.commit()
             return redirect('/sell')
