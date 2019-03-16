@@ -76,6 +76,7 @@ def index():
         quotes[symbol] = lookup(str(symbol))
         quotes[symbol]['noStocks'] = noSharesList[i]
         quotes[symbol]['total'] = float(quotes[symbol]['price']) * int(noSharesList[i])
+        quotes[symbol]['price'] = usd(quotes[symbol]['price'])
         allTotal +=  float(quotes[symbol]['total'])
         quotes[symbol]['total'] = usd(quotes[symbol]['total'])
         i += 1
@@ -144,7 +145,55 @@ def check():
 @login_required
 def history():
     """Show history of transactions"""
-    return apology("TODO")
+    bad_chars = "(),'"
+    bad_charsDate = "\s"
+    rgx = re.compile('[%s]' % bad_chars)
+    rgxDate = re.compile('[%s]' % bad_chars)
+
+    user_history = userHistory.query.filter_by(user_id = current_user.id).all()
+    user_history_symbol =  userHistory.query.filter_by(user_id = current_user.id).with_entities(userHistory.historySymbol).all()
+    user_history_symbolName =  userHistory.query.filter_by(user_id = current_user.id).with_entities(userHistory.historySymbolName).all()
+    user_history_noShares =  userHistory.query.filter_by(user_id = current_user.id).with_entities(userHistory.noSharesHistory).all()
+    user_history_ppStock =  userHistory.query.filter_by(user_id = current_user.id).with_entities(userHistory.historyppStock).all()
+    user_history_transType =  userHistory.query.filter_by(user_id = current_user.id).with_entities(userHistory.transType).all()
+    user_history_transAmount =  userHistory.query.filter_by(user_id = current_user.id).with_entities(userHistory.transAmount).all()
+    user_history_date =  userHistory.query.filter_by(user_id = current_user.id).with_entities(userHistory.date).all()
+
+
+    user_history_symbol_list = [rgx.sub('', str(user_history_symbol[i])) for i in range(0, len(user_history_symbol))]
+    user_history_symbolName_list = [rgx.sub('', str(user_history_symbolName[i])) for i in range(0, len(user_history_symbolName))]
+    user_history_noShares_list = [rgx.sub('', str(user_history_noShares[i])) for i in range(0, len(user_history_noShares))]
+    user_history_ppStock_list = [rgx.sub('', str(user_history_ppStock[i])) for i in range(0, len(user_history_ppStock))]
+    user_history_transType_list = [rgx.sub('', str(user_history_transType[i])) for i in range(0, len(user_history_transType))]
+    user_history_transAmount_list = [rgx.sub('', str(user_history_transAmount[i])) for i in range(0, len(user_history_transAmount))]
+
+    user_history_date_list = [rgx.sub('', str(user_history_date[i])) for i in range(0, len(user_history_date))]
+    user_history_date_list = [user_history_date_list[i][17:26] for i in range(0, len(user_history_date))]
+    user_history_date_list = [user_history_date_list[i].replace(' ', '/') for i in range(0, len(user_history_date))]
+
+    i = 0
+    for item in user_history_ppStock_list:
+        user_history_ppStock_list[i] = float(user_history_ppStock_list[i])
+        user_history_ppStock_list[i] = usd(user_history_ppStock_list[i])
+
+        i += 1
+
+    j = 0
+    for item in user_history_transAmount_list:
+        user_history_transAmount_list[j] = float(user_history_transAmount_list[j])
+        user_history_transAmount_list[j] = usd(user_history_transAmount_list[j])
+
+        j += 1
+
+    user_historyLength = len(user_history)
+
+    return render_template("history.html", user_historyLength=user_historyLength, user_history_date_list=user_history_date_list,
+                                           user_history_transAmount_list=user_history_transAmount_list, user_history_transType_list=
+                                           user_history_transType_list, user_history_ppStock_list=user_history_ppStock_list, user_history_noShares_list=
+                                           user_history_noShares_list, user_history_symbolName_list=user_history_symbolName_list,
+                                           user_history_symbol_list=user_history_symbol_list)
+
+
 
 
 @app.route("/login", methods=["GET", "POST"])

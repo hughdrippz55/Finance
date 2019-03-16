@@ -1,0 +1,31 @@
+{% extends 'layout.html' %}
+
+{% block main %}
+<div class="row justify-content-center">
+   <table class="table table-striped" style="width: 100%;">
+      <tr>
+         <th>Stock Symbol</th>
+         <th>Company Name</th>
+         <th>Stock Price</th>
+         <th>No. of Stocks</th>
+         <th>Buy/Sell</th>
+         <th>Total</th>
+         <th>Date</th>
+      </tr>
+      {% for n in range((user_historyLength)) %}
+      <tr>
+         <td>{{ user_history_symbol_list[n] }}</td>
+         <td>{{ user_history_symbolName_list[n] }}</td>
+         <td>{{ user_history_ppStock_list[n] }}</td>
+         <td>{{ user_history_noShares_list[n] }}</td>
+         <td>{{ user_history_transType_list[n] }}</td>
+         <td>{{ user_history_transAmount_list[n] }}</td>
+         <td>{{ user_history_date_list[n] }}</td>
+
+      </tr>
+      {% endfor %}
+   </table>
+</div>
+
+
+{% endblock %}

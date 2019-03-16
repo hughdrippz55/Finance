@@ -52,6 +52,9 @@ class userHistory(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     userC = db.relationship
 
+    def __repr__(self):
+        return f"{self.historySymbol}"
+
 
 @login_manager.user_loader
 def load_user(user_id):
