@@ -1,38 +1,18 @@
 import os
-import datetime
 import re
-from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, flash, get_flashed_messages, jsonify, redirect, render_template, session, request, url_for
+import secrets
+from flask import render_template, url_for, flash, redirect, request
+from FinanceApp import app, db, bcrypt
+from FinanceApp.forms import RegistrationForm, LoginForm, QuoteForm, BuyForm, SellForm
+from FinanceApp.models import User, load_user, userCurrent, userHistory
+from FinanceApp.helpers import lookup, usd, apology
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required
-from flask_session import Session
-from flask_bcrypt import Bcrypt
-from tempfile import mkdtemp
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import lookup, usd
+from tempfile import mkdtemp
 
-# Configure application
-app = Flask(__name__)
+app.jinja_env.filters["usd"] = usd
 
-# Ensure templates are auto-reloaded
-app.config["TEMPLATES_AUTO_RELOAD"] = True
-app.config['SECRET_KEY'] = "fbae185025fe828575acb367e5687f46"
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///finance.db"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
-bcrypt= Bcrypt(app)
-login_manager = LoginManager(app)
-login_manager.login_view = 'login'
-login_manager.login_message_category = 'info'
-db = SQLAlchemy(app)
-now = datetime.datetime.now()
-
-from models import User, load_user, userCurrent, userHistory
-from forms import RegistrationForm, LoginForm, QuoteForm, BuyForm, SellForm
-
-db.create_all()
-
-# Ensure responses aren't cached
 @app.after_request
 def after_request(response):
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
@@ -40,16 +20,11 @@ def after_request(response):
     response.headers["Pragma"] = "no-cache"
     return response
 
-# Custom filter
-app.jinja_env.filters["usd"] = usd
-
 # Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_FILE_DIR"] = mkdtemp()
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 
-
-# Configure CS50 Library to use SQLite database
 @app.route("/")
 @app.route("/home")
 @login_required

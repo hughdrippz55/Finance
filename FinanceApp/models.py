@@ -1,5 +1,4 @@
-from flask_sqlalchemy import SQLAlchemy
-from application import db, login_manager
+from FinanceApp import db, login_manager
 from flask_login import UserMixin
 import datetime
 
