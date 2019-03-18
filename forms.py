@@ -30,7 +30,7 @@ class LoginForm(FlaskForm):
 
 class QuoteForm(FlaskForm):
 
-    quote_symbol = StringField('Symbol', validators=[DataRequired(), Length(min = 3)])
+    quote_symbol = StringField('Symbol', validators=[DataRequired(), Length(min = 1)])
     submit = SubmitField('Get Quote')
 
 class BuyForm(FlaskForm):
